@@ -1,29 +1,25 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
-
-const userRoutes = require("./routes/userRoutes");
-const transactionRoutes = require("./routes/transactionRoutes");
 
 const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
 app.use(express.json());
-app.use(cors());
 
-// Rotas
-app.use("/api/users", userRoutes);
-app.use("/api/transactions", transactionRoutes);
-
-// Conexão
-mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/repsol")
-  .then(() => {
-    console.log("MongoDB connected");
-    app.listen(5000, () => console.log("Server running on port 5000"));
+// Conexão ao MongoDB
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
   })
-  .catch(err => console.error("MongoDB connection failed:", err));
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-  // Importar cron job
-const dailyIncomeJob = require("./cron/dailyIncome");
+// Rota simples para teste
+app.get("/", (req, res) => {
+  res.send("Backend Repsol funcionando 🚀");
+});
 
-// Iniciar o job
-dailyIncomeJob();
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
